@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Install Dependencies') {
+        stage('Install System Dependencies') {
             steps {
                 script {
                     // Instala o Cocoapods
