@@ -16,14 +16,15 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
+                    // Executa a análise SonarQube
                     sh '''
                         sonar-scanner \
                             -Dsonar.projectKey=PokeDexApp \
                             -Dsonar.projectName=PokeDexApp \
                             -Dsonar.projectVersion=1.0 \
                             -Dsonar.sources=./PokeDexApp \
-                            -Dsonar.host.url=http://localhost:9000  // URL do seu servidor SonarQube
-                            -Dsonar.login=your_token_here  // Token de autenticação para o SonarQube
+                            -Dsonar.host.url=http://localhost:9000 \
+                            -Dsonar.login=your_token_here
                     '''
                 }
             }
