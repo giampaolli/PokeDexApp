@@ -2,44 +2,52 @@ pipeline {
     agent any
 
     stages {
-        stage('Install System Dependencies') {
+        stage('Install Ruby') {
             steps {
                 script {
-                    // Instalar o Cocoapods sem sudo (caso não esteja instalado)
-                    sh 'gem install cocoapods --user-install'
+                    // Instalar o rbenv
+                    sh '''
+                        # Instalar rbenv
+                        brew install rbenv
+                        rbenv init
+                        echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
+                        source ~/.bash_profile
 
-                    // Garantir que o cocoapods seja executado a partir do diretório correto
-                    sh 'export PATH="$HOME/.gem/ruby/2.6.0/bin:$PATH" && pod install'
+                        # Instalar Ruby 3.1.0 (ou qualquer versão que você precise)
+                        rbenv install 3.1.0
+                        rbenv global 3.1.0
+                    '''
                 }
             }
         }
-        stage('Checkout') {
+
+        stage('Install Cocoapods') {
             steps {
-                git 'https://github.com/giampaolli/PokeDexApp.git'
+                script {
+                    // Instalar o Cocoapods
+                    sh '''
+                        gem install cocoapods --user-install
+                    '''
+                }
             }
         }
 
         stage('Install Dependencies') {
             steps {
+                // Rodar pod install
                 sh 'pod install'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'xcodebuild -workspace YourWorkspace.xcworkspace -scheme YourScheme clean build'
+                sh 'xcodebuild -workspace PokeDexAp.xcworkspace -scheme PokeDexAp clean build'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'xcodebuild test -workspace YourWorkspace.xcworkspace -scheme YourScheme'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh 'fastlane ios beta'
+                sh 'xcodebuild test -workspace PokeDexAp.xcworkspace -scheme PokeDexAp'
             }
         }
     }
