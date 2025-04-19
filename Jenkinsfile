@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'git@github.com:giampaolli/PokeDexApp.git'
+                git 'https://github.com/giampaolli/PokeDexApp.git'
             }
         }
 
