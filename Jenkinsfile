@@ -4,6 +4,7 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
+                sh 'echo $PATH'
                 // Rodar pod install
                 sh 'pod install'
             }
