@@ -2,6 +2,14 @@ pipeline {
     agent any
 
     stages {
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Instala o Cocoapods
+                    sh 'sudo gem install cocoapods'
+                }
+            }
+        }
         stage('Checkout') {
             steps {
                 git 'https://github.com/giampaolli/PokeDexApp.git'
