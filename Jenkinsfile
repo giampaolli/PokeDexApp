@@ -4,7 +4,6 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
-                sh 'echo $PATH'
                 // Rodar pod install
                 sh 'pod install'
             }
@@ -18,7 +17,8 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'xcodebuild test -workspace PokeDexApp.xcworkspace -scheme PokeDexApp -destination 'platform=iOS Simulator,name=iPhone 16''
+                // Corrigir a sintaxe usando aspas duplas para envolver o comando
+                sh "xcodebuild test -workspace PokeDexApp.xcworkspace -scheme PokeDexApp -destination 'platform=iOS Simulator,name=iPhone 16'"
             }
         }
     }
