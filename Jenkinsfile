@@ -3,24 +3,19 @@ import groovy.json.JsonSlurper
 pipeline {
     agent any
 
-    environment {
-        SONARQUBE_SCANNER_HOME = '/opt/sonar-scanner'  // Caminho onde o SonarQube Scanner está instalado
-    }
-
     stages {
 
-        // Stage para fazer checkout do código do repositório
+        // 1. Checkout do código
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        // Stage para realizar a análise do SonarQube
+        // 2. Análise do SonarQube
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    // Executa a análise SonarQube
                     sh '''
                         sonar-scanner \
                             -Dsonar.projectKey=PokeDexApp \
@@ -34,14 +29,14 @@ pipeline {
             }
         }
 
-        // Stage para instalar as dependências com CocoaPods
+        // 3. Instalar Dependências
         stage('Install Dependencies') {
             steps {
                 sh 'pod install'
             }
         }
 
-        // Stage para rodar o SwiftLint e garantir que o código siga os padrões
+        // 4. Rodar o SwiftLint (Verificação de estilo)
         stage('Run SwiftLint') {
             steps {
                 script {
@@ -54,14 +49,14 @@ pipeline {
             }
         }
 
-        // Stage para rodar o build do projeto
+        // 5. Build do Projeto
         stage('Build') {
             steps {
                 sh 'xcodebuild -workspace PokeDexApp.xcworkspace -scheme PokeDexApp clean build'
             }
         }
 
-        // Stage para rodar os testes com cobertura
+        // 6. Rodar os Testes com Cobertura
         stage('Run Tests with Coverage') {
             steps {
                 script {
