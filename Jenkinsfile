@@ -12,13 +12,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'xcodebuild -workspace PokeDexAp.xcworkspace -scheme PokeDexAp clean build'
+                sh 'xcodebuild -workspace PokeDexApp.xcworkspace -scheme PokeDexApp clean build'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'xcodebuild test -workspace PokeDexAp.xcworkspace -scheme PokeDexAp'
+                sh 'xcodebuild test -workspace PokeDexApp.xcworkspace -scheme PokeDexApp'
             }
         }
     }
