@@ -18,7 +18,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'xcodebuild test -workspace PokeDexApp.xcworkspace -scheme PokeDexApp'
+                sh 'xcodebuild test -workspace PokeDexApp.xcworkspace -scheme PokeDexApp -destination 'platform=iOS Simulator,name=iPhone 16''
             }
         }
     }
