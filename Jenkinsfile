@@ -2,18 +2,33 @@ pipeline {
     agent any
 
     stages {
-        stage('Install Ruby') {
+        stage('Install Homebrew') {
+            steps {
+                script {
+                    // Instalar o Homebrew (se não estiver instalado)
+                    sh '''
+                        if ! which brew > /dev/null; then
+                            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+                        fi
+                    '''
+                }
+            }
+        }
+
+        stage('Install rbenv') {
             steps {
                 script {
                     // Instalar o rbenv
-                    sh '''
-                        # Instalar rbenv
-                        brew install rbenv
-                        rbenv init
-                        echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
-                        source ~/.bash_profile
+                    sh 'brew install rbenv'
+                }
+            }
+        }
 
-                        # Instalar Ruby 3.1.0 (ou qualquer versão que você precise)
+        stage('Install Ruby') {
+            steps {
+                script {
+                    // Instalar Ruby
+                    sh '''
                         rbenv install 3.1.0
                         rbenv global 3.1.0
                     '''
@@ -24,10 +39,8 @@ pipeline {
         stage('Install Cocoapods') {
             steps {
                 script {
-                    // Instalar o Cocoapods
-                    sh '''
-                        gem install cocoapods --user-install
-                    '''
+                    // Instalar Cocoapods
+                    sh 'gem install cocoapods --user-install'
                 }
             }
         }
