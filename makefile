@@ -1,50 +1,66 @@
-.PHONY: setup install_rbenv install_ruby install_bundler bundle pod fastlane
+.PHONY: full-setup install_rbenv install_ruby install_bundler bundle pod fastlane
 
 RUBY_VERSION=3.4.3
 
-setup: install_rbenv install_ruby install_bundler bundle
+full-setup:
+	@echo "🧼 Atualizando Homebrew..."
+	brew update
 
-install_rbenv:
-	@echo "🔧 Verificando instalação do rbenv..."
+	@echo "🔧 Verificando rbenv..."
 	@if ! command -v rbenv >/dev/null; then \
-		echo "Instalando rbenv via Homebrew..."; \
+		echo "📦 Instalando rbenv..."; \
 		brew install rbenv; \
+	else \
+		echo "✅ rbenv já instalado."; \
 	fi
-	@if ! brew list ruby-build >/dev/null 2>&1; then \
-		echo "Instalando ruby-build..."; \
-		brew install ruby-build; \
+
+	@echo "🔁 Garantindo última versão do ruby-build..."
+	brew uninstall --ignore-dependencies ruby-build || true
+	brew install ruby-build
+
+	@echo "📋 Verificando se Ruby $(RUBY_VERSION) está disponível..."
+	@if ! rbenv install --list | grep -q "$(RUBY_VERSION)"; then \
+		echo "⚠️ Versão $(RUBY_VERSION) não encontrada. Instalando ruby-build como plugin via GitHub..."; \
+		git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build || true; \
 	fi
-	@echo "✅ rbenv instalado."
+
+	@echo "💎 Instalando Ruby $(RUBY_VERSION)..."
+	rbenv install -s $(RUBY_VERSION)
+	rbenv local $(RUBY_VERSION)
+	echo "$(RUBY_VERSION)" > .ruby-version
+
+	@echo "📦 Instalando Bundler..."
+	gem install bundler || echo "⚠️ Bundler já instalado."
+
+	@echo "📚 Instalando gems com Bundler..."
+	bundle install
+
+	@echo "📦 Instalando CocoaPods..."
+	bundle exec pod install
+
+	@echo ""
+	@echo "✅ Ambiente configurado com sucesso!"
+	@echo "Ruby: `ruby -v`"
+	@echo "Bundler: `bundle -v`"
+
+# Targets auxiliares caso queira rodar separado
+install_rbenv:
+	brew install rbenv
+	brew install ruby-build
 
 install_ruby:
-	@echo "💎 Instalando Ruby $(RUBY_VERSION) com rbenv (se necessário)..."
-	@rbenv versions | grep -q $(RUBY_VERSION) || ( \
-		echo "Tentando instalar Ruby $(RUBY_VERSION)..."; \
-		if ! rbenv install -s $(RUBY_VERSION); then \
-			echo "❌ Falha ao instalar Ruby $(RUBY_VERSION)."; \
-			echo "🔁 Tente rodar: brew upgrade ruby-build"; \
-			exit 1; \
-		fi \
-	)
-	@rbenv local $(RUBY_VERSION)
-	@echo "$(RUBY_VERSION)" > .ruby-version
-	@echo "✅ Ruby $(RUBY_VERSION) configurado localmente."
+	rbenv install -s $(RUBY_VERSION)
+	rbenv local $(RUBY_VERSION)
+	echo "$(RUBY_VERSION)" > .ruby-version
 
 install_bundler:
-	@echo "📦 Instalando Bundler..."
-	@gem install bundler || echo "⚠️ Bundler já instalado."
-	@echo "✅ Bundler pronto."
+	gem install bundler
 
 bundle:
-	@echo "📚 Instalando gems com Bundler..."
-	@bundle install
-	@echo "✅ Gems instaladas."
+	bundle install
 
 pod:
-	@echo "📦 Instalando dependências do CocoaPods..."
-	@bundle exec pod install
-	@echo "✅ Pods instalados."
+	bundle exec pod install
 
 fastlane:
-	@echo "🚀 Rodando Fastlane (lane padrão)..."
-	@bundle exec fastlane
+	bundle exec fastlane
