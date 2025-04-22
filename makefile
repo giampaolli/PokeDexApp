@@ -57,7 +57,18 @@ install_bundler:
 	gem install bundler
 
 bundle:
-	bundle install
+	@echo "🛠️ Garantindo ferramentas de build nativas..."
+	@xcode-select --install 2>/dev/null || echo "✅ Ferramentas de linha de comando já instaladas."
+
+	@echo "📦 Instalando bibliotecas nativas..."
+	@brew install libyaml libxml2 libxslt || echo "⚠️ Algumas libs já estavam instaladas."
+
+	@echo "🔧 Configurando build seguro da gem rexml..."
+	@bundle config build.rexml --with-cflags="-Wno-error=implicit-function-declaration"
+
+	@echo "📚 Instalando gems com Bundler (modo verbose)..."
+	@bundle install --verbose
+	@echo "✅ Gems instaladas com sucesso."
 
 pod:
 	bundle exec pod install
